@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+        }
+        #controls {
+            margin: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: gray;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #table {
+            background-color: green;
+            width: 80%;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 10px 2px white;
+        }
+        #player-cards, #dealer-cards {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .card {
+            background-color: white;
+            color: black;
+            font-size: 24px;
+            padding: 10px;
+            border-radius: 5px;
+            width: 40px;
+            text-align: center;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 20px;
+            font-family: Wingdings, Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <button id="start-button">Start Game</button>
+        <button id="reset-button">Reset</button>
+        <button id="hit-button" disabled>Hit</button>
+        <button id="stand-button" disabled>Stand</button>
+    </div>
+    <div id="table">
+        <h2>Dealer's Hand</h2>
+        <div id="dealer-cards"></div>
+        <h2>Your Hand</h2>
+        <div id="player-cards"></div>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const startButton = document.getElementById("start-button");
+        const resetButton = document.getElementById("reset-button");
+        const hitButton = document.getElementById("hit-button");
+        const standButton = document.getElementById("stand-button");
+        const dealerCardsDiv = document.getElementById("dealer-cards");
+        const playerCardsDiv = document.getElementById("player-cards");
+        const statusDiv = document.getElementById("status");
+
+        let dealerHand = [];
+        let playerHand = [];
+        let gameActive = false;
+
+        function getRandomCard() {
+            const cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            return cards[Math.floor(Math.random() * cards.length)];
+        }
+
+        function calculateHandValue(hand) {
+            let value = 0;
+            let aces = 0;
+
+            hand.forEach(card => {
+                if (['J', 'Q', 'K'].includes(card)) {
+                    value += 10;
+                } else if (card === 'A') {
+                    value += 11;
+                    aces += 1;
+                } else {
+                    value += parseInt(card);
+                }
+            });
+
+            while (value > 21 && aces > 0) {
+                value -= 10;
+                aces -= 1;
+            }
+
+            return value;
+        }
+
+        function checkWinner() {
+            const dealerValue = calculateHandValue(dealerHand);
+            const playerValue = calculateHandValue(playerHand);
+
+            if (playerValue > 21) {
+                statusDiv.textContent = "You busted! Dealer wins.";
+            } else if (dealerValue > 21) {
+                statusDiv.textContent = "Dealer busted! You win!";
+            } else if (playerValue === 21) {
+                statusDiv.textContent = "This is just the start.";
+            } else if (playerValue > dealerValue) {
+                statusDiv.textContent = "This is just the start!";
+            } else if (playerValue < dealerValue) {
+                statusDiv.textContent = "Dealer wins!";
+            } else {
+                statusDiv.textContent = "It's a tie!";
+            }
+
+            hitButton.disabled = true;
+            standButton.disabled = true;
+        }
+
+        function dealerTurn() {
+            while (calculateHandValue(dealerHand) < 17) {
+                dealerHand.push(getRandomCard());
+            }
+
+            dealerCardsDiv.innerHTML = dealerHand.map(card => `<div class="card">${card}</div>`).join("");
+            checkWinner();
+        }
+
+        function startGame() {
+            if (gameActive) return;
+
+            gameActive = true;
+            statusDiv.textContent = "";
+            dealerHand = [getRandomCard(), getRandomCard()];
+            playerHand = [getRandomCard(), getRandomCard()];
+
+            dealerCardsDiv.innerHTML = `<div class="card">?</div><div class="card">${dealerHand[1]}</div>`;
+            playerCardsDiv.innerHTML = playerHand.map(card => `<div class="card">${card}</div>`).join("");
+
+            hitButton.disabled = false;
+            standButton.disabled = false;
+        }
+
+        function hit() {
+            playerHand.push(getRandomCard());
+            playerCardsDiv.innerHTML = playerHand.map(card => `<div class="card">${card}</div>`).join("");
+
+            if (calculateHandValue(playerHand) > 21) {
+                statusDiv.textContent = "You busted! Dealer wins.";
+                hitButton.disabled = true;
+                standButton.disabled = true;
+            }
+        }
+
+        function stand() {
+            hitButton.disabled = true;
+            standButton.disabled = true;
+            dealerCardsDiv.innerHTML = dealerHand.map(card => `<div class="card">${card}</div>`).join("");
+            dealerTurn();
+        }
+
+        function resetGame() {
+            gameActive = false;
+            dealerHand = [];
+            playerHand = [];
+            dealerCardsDiv.innerHTML = "";
+            playerCardsDiv.innerHTML = "";
+            statusDiv.textContent = "";
+            hitButton.disabled = true;
+            standButton.disabled = true;
+        }
+
+        startButton.addEventListener("click", startGame);
+        resetButton.addEventListener("click", resetGame);
+        hitButton.addEventListener("click", hit);
+        standButton.addEventListener("click", stand);
+    </script>
+</body>
+</html>
