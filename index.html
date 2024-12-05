@@ -123,17 +123,17 @@
             const playerValue = calculateHandValue(playerHand);
 
             if (playerValue > 21) {
-                statusDiv.textContent = "You busted! Dealer wins.";
+                statusDiv.textContent = "You failed. Try again";
             } else if (dealerValue > 21) {
-                statusDiv.textContent = "Dealer busted! You win!";
+                statusDiv.textContent = "You win";
             } else if (playerValue === 21) {
                 statusDiv.textContent = "This is just the start.";
             } else if (playerValue > dealerValue) {
                 statusDiv.textContent = "This is just the start!";
             } else if (playerValue < dealerValue) {
-                statusDiv.textContent = "Dealer wins!";
+                statusDiv.textContent = "Dealer win";
             } else {
-                statusDiv.textContent = "It's a tie!";
+                statusDiv.textContent = "a tie";
             }
 
             hitButton.disabled = true;
