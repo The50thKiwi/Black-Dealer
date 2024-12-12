@@ -125,15 +125,15 @@
             if (playerValue > 21) {
                 statusDiv.textContent = "You failed. Try again";
             } else if (dealerValue > 21) {
-                statusDiv.textContent = "You win";
+                statusDiv.textContent = "38";
             } else if (playerValue === 21) {
                 statusDiv.textContent = "This is just the start.";
             } else if (playerValue > dealerValue) {
                 statusDiv.textContent = "This is just the start!";
             } else if (playerValue < dealerValue) {
-                statusDiv.textContent = "Dealer win";
+                statusDiv.textContent = "I win";
             } else {
-                statusDiv.textContent = "a tie";
+                statusDiv.textContent = "tie";
             }
 
             hitButton.disabled = true;
